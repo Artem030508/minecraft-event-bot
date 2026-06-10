@@ -8,16 +8,33 @@ const bot = mineflayer.createBot({
 
 })
 
+const events = [
+    'death',
+    'night',
+    'rain'
+]
+
 bot.on('spawn', () => {
     console.log('бот зашел на сервер')
 })
 
 bot.on('chat', (username, message) => {
     if (username === bot.username) return
+
     console.log(username + ': ' + message)
 
     if (message === '!event') {
-        bot.chat('рандомный ивент запущен ')
+        const randomEvent = events[Math.floor(Math.random() * events.length)]
+
+        bot.chat(`Выпал ивент: ${randomEvent}`)
+
+        if (randomEvent === 'night') {
+            bot.chat('/time set night')
+        }
+
+        if (randomEvent === 'rain') {
+            bot.chat('/weather rain')
+        }
     }
 })
 
