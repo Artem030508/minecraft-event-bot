@@ -3,7 +3,7 @@ const mineflayer = require('mineflayer')
 const bot = mineflayer.createBot({
     host: 'localhost',
     username: 'ZELIMHAN',
-    port: 25565,
+    port: 49158,
     version: '1.21'
 
 })
@@ -18,9 +18,20 @@ const events = [
     'speed',
     'totem',
     'golod',
-    'Zombie'
+    'zombie',
+    'tnt',
+    'dungeon',
+    'fireball',
+    'village'
+]
 
-
+const dungeons = [
+    'minecraft:mansion',          
+    'minecraft:pillager_outpost', 
+    'minecraft:desert_pyramid',   
+    'minecraft:ruined_portal',    
+    'minecraft:jungle_pyramid',   
+    'minecraft:swamp_hut'         
 ]
 
 function lightningEvent() {
@@ -38,7 +49,7 @@ function nightEvent() {
 }
 
 function appleEvent() {
-    bot.chat('Event: Золотое яблоко')
+    bot.chat('Event: Бонуска')
 
     bot.chat('/give @a minecraft:golden_apple 1')
 }
@@ -54,7 +65,7 @@ function dogEvent() {
 function speedEvent() {
     bot.chat('Event: I can`t stop')
 
-    bot.chat('/effect give @a minecraft:speed 15 70')
+    bot.chat('/effect give @a minecraft:speed 20 70')
 
 }
 
@@ -68,18 +79,43 @@ function totemEvent() {
 function golodEvent() {
     bot.chat('Event: Чревоугодие')
 
-    bot.chat('/effect give @a minecraft:hunger 5 255')
+    bot.chat('/effect give @a minecraft:hunger 10 255')
     bot.chat('/give @a minecraft:rotten_flesh 15')
 }
 
-function ZombieEvent() {
+function zombieEvent() {
     bot.chat('Event: Зомби-апокалипсис')
 
     bot.chat('/execute as @a at @s run summon minecraft:zombie ~2 ~ ~')
-    bot.chat('/execute as @a at @s run summon minecraft:zombie ~-2 ~ ~')
+    bot.chat('/execute as @a at @s run summon minecraft:zombie ~-2 ~ ~')  
     bot.chat('/execute as @a at @s run summon minecraft:zombie ~ ~ ~2')
 }
 
+function tntEvent() {
+    bot.chat('Event: TnT')
+
+    bot.chat('/execute as @a at @s run summon minecraft:tnt ~ ~ ~ {fuse:40}')
+}
+
+function dungeonEvent() {
+    bot.chat('Event: Случайный данж')
+
+    const randomDungeon = dungeons[Math.floor(Math.random() * dungeons.length)]
+
+    bot.chat(`/execute as @a at @s positioned ~10 ~ ~ run place structure ${randomDungeon}`)
+}
+
+function fireballEvent() {
+    bot.chat('Event: Фаерболл')
+
+    bot.chat('/execute as @a at @s run summon fireball ~ ~1 ~ {ExplosionPower:10}')
+}
+
+function villageEvent() {
+    bot.chat('Event: Деревня!')
+
+    bot.chat('/execute as @a at @s positioned ~15 ~ ~ run place structure minecraft:village_plains')
+}
 
 bot.on('spawn', () => {
     console.log('бот зашел на сервер')
@@ -133,8 +169,24 @@ bot.on('chat', (username, message) => {
                 golodEvent()
             }
 
-            if (randomEvent === 'Zombie') {
-                ZombieEvent()
+            if (randomEvent === 'zombie') {
+                zombieEvent()
+            }
+
+            if (randomEvent === 'tnt') {
+                tntEvent()
+            }
+
+            if (randomEvent === 'dungeon') {
+                dungeonEvent()
+            }
+
+            if (randomEvent === 'fireball') {
+                fireballEvent()
+            }
+
+            if (randomEvent === 'village') {
+                villageEvent()
             }
 
         }, 60000) 
