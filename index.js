@@ -9,6 +9,7 @@ const bot = mineflayer.createBot({
 })
 
 let eventInterval = null
+let lastEvent = null
 
 const events = [
     'lightning',
@@ -22,7 +23,8 @@ const events = [
     'tnt',
     'dungeon',
     'fireball',
-    'village'
+    'village',
+    'waterdrop'
 ]
 
 const dungeons = [
@@ -57,7 +59,6 @@ function appleEvent() {
 function dogEvent() {
     bot.chat('Event: Друг человека')
     
-
     bot.chat('/give @a minecraft:bone 5')
     bot.chat('/execute as @a at @s run summon minecraft:wolf ~2 ~ ~')
 }
@@ -117,6 +118,13 @@ function villageEvent() {
     bot.chat('/execute as @a at @s positioned ~15 ~ ~ run place structure minecraft:village_plains')
 }
 
+function waterdropEvent() {
+    bot.chat('Event: ВатерДроп')
+
+    bot.chat('/give @a minecraft:water_bucket 1')
+    bot.chat('/execute as @a at @s run tp @s ~ ~50 ~')
+}
+
 bot.on('spawn', () => {
     console.log('бот зашел на сервер')
 })
@@ -137,8 +145,15 @@ bot.on('chat', (username, message) => {
 
         eventInterval = setInterval(() => {
 
-            const randomEvent = events[Math.floor(Math.random() * events.length)]
 
+            let randomEvent
+
+            do {
+                randomEvent = events[Math.floor(Math.random() * events.length)]
+            } while (randomEvent === lastEvent)
+
+            lastEvent = randomEvent
+           
             console.log(randomEvent)
 
             if (randomEvent === 'lightning') {
@@ -187,6 +202,10 @@ bot.on('chat', (username, message) => {
 
             if (randomEvent === 'village') {
                 villageEvent()
+            }
+
+            if (randomEvent === 'waterdrop') {
+                waterdropEvent()
             }
 
         }, 60000) 
