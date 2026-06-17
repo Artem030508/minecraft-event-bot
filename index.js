@@ -2,7 +2,7 @@ const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
     host: 'localhost',
-    username: 'ZELIMHAN',
+    username: 'BOT EVENT',
     port: 49158,
     version: '1.21'
 
@@ -18,13 +18,18 @@ const events = [
     'dog',
     'speed',
     'totem',
-    'golod',
+    'hunger',
     'zombie',
     'tnt',
     'dungeon',
     'fireball',
     'village',
-    'waterdrop'
+    'waterdrop',
+    'ghost',
+    'cold',
+    'levitation',
+    'golem',
+    'time',
 ]
 
 const dungeons = [
@@ -77,7 +82,7 @@ function totemEvent() {
 
 }
 
-function golodEvent() {
+function hungerEvent() {
     bot.chat('Event: Чревоугодие')
 
     bot.chat('/effect give @a minecraft:hunger 10 255')
@@ -122,17 +127,97 @@ function waterdropEvent() {
     bot.chat('Event: ВатерДроп')
 
     bot.chat('/give @a minecraft:water_bucket 1')
-    bot.chat('/execute as @a at @s run tp @s ~ ~50 ~')
+    bot.chat('/execute as @a at @s run tp @s ~ ~70 ~')
 }
+
+function ghostEvent() {
+    bot.chat('Event: Призрак')
+
+    bot.chat('/gamemode spectator @a')
+
+    setTimeout(() => {
+        bot.chat('/gamemode survival @a')
+    }, 15000)
+}
+
+function coldEvent() {
+    bot.chat('Event: Заморозка')
+
+    bot.chat('/effect give @a slowness 12 255 true')
+}
+
+function levitationEvent() {
+    bot.chat('Event: Невесомость')
+
+    bot.chat('/effect give @a levitation 15 1 true')
+}
+
+function golemEvent() {
+    bot.chat('Event: Подмога')
+
+    bot.chat('/give @a minecraft:iron_golem_spawn_egg')
+}
+
+function timeEvent() {
+    bot.chat('Event: Остановка времени')
+
+    bot.chat('/tick freeze')
+
+    setTimeout(() => {
+        bot.chat('/tick unfreeze')
+    }, 25000)
+}
+
+
 
 bot.on('spawn', () => {
     console.log('бот зашел на сервер')
 })
 
+
 bot.on('chat', (username, message) => {
     if (username === bot.username) return
 
     console.log(username + ': ' + message)
+
+    if (message === "!help") {
+        bot.chat("========== EVENT BOT ==========");
+        bot.chat("!help - показать помощь");
+        bot.chat("!menu - показать меню ивентов");
+        bot.chat("!event <название ивента> - запуск конкретного ивента");
+        bot.chat("!easy - лёгкий режим (70% хороших, 30% плохих)");
+        bot.chat("!normal - обычный режим (50% хороших, 50% плохих)");
+        bot.chat("!hard - сложный режим (30% хороших, 70% плохих)");
+        bot.chat("!start - запуск ивентов");
+        bot.chat("!stop - остановка ивентов");
+        bot.chat("==========================");
+    }
+
+    if (message === "!menu") {
+        bot.chat('========== EVENT MENU ==========')
+       bot.chat('--- Хорошие ивенты ---')
+        bot.chat('Apple - Золотое яблоко')
+        bot.chat('Dog - Спавн собаки и кости')
+        bot.chat('Speed - Очень высокая скорость')
+        bot.chat('Totem - Тотем бессмертия')
+        bot.chat('Village - Спавн деревни')
+        bot.chat('Dungeon - Спавн случайного данжа')
+        bot.chat('Golem - Яйцо призыва голема')
+        bot.chat('Time - Остановка времени на 25 сек')
+
+        bot.chat('--- Плохие ивенты ---')
+        bot.chat('Lightning - Спавн молнии')
+        bot.chat('Night - Ночь')
+        bot.chat('Hunger - Голод')
+        bot.chat('Zombie - Спавн 3 зомби')
+        bot.chat('TNT - Активирующийся динамит')
+        bot.chat('Fireball - Спавн фаерболла')
+        bot.chat('Water Drop - Тп игрока на 50 блоков вверх')
+        bot.chat('Ghost - Режим наблюдателя на 15 сек')
+        bot.chat('Cold - Стан игрока на 15 сек')
+        bot.chat('Levitation - Левитация на 15 сек')
+        bot.chat('===============================')
+    }
 
     if (message === '!start') {
 
@@ -180,8 +265,8 @@ bot.on('chat', (username, message) => {
                 totemEvent()
             }
 
-            if (randomEvent === 'golod') {
-                golodEvent()
+            if (randomEvent === 'hunger') {
+                hungerEvent()
             }
 
             if (randomEvent === 'zombie') {
@@ -208,6 +293,26 @@ bot.on('chat', (username, message) => {
                 waterdropEvent()
             }
 
+            if (randomEvent === 'ghost') {
+                ghostEvent()
+            }
+
+            if (randomEvent === 'cold') {
+                coldEvent()
+            }
+
+            if (randomEvent === 'levitation') {
+                levitationEvent()
+            }
+
+            if (randomEvent === 'golem') {
+                golemEvent()
+            }
+
+            if (randomEvent === 'time') {
+                timeEvent()
+            }
+
         }, 60000) 
     }
 
@@ -222,11 +327,16 @@ bot.on('chat', (username, message) => {
 })
 
 
-
 bot.on('error', (err) => {
   console.log('ошибка:', err)
 })
 
-bot.on('end', () => {
-  console.log('бот отключился')
+bot.on('kicked', (reason) => {
+    console.log('Бота кикнули:')
+    console.log(reason)
 })
+
+bot.on('end', (reason) => {
+    console.log('Бот отключился:', reason)
+})
+
