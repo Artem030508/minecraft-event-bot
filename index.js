@@ -2,7 +2,7 @@ const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
     host: 'localhost',
-    username: 'BOT EVENT',
+    username: 'BotEvent',
     port: 49158,
     version: '1.21'
 
@@ -10,6 +10,7 @@ const bot = mineflayer.createBot({
 
 let eventInterval = null
 let lastEvent = null
+const playerSelector = '@a[name=!BotEvent]'
 
 const events = [
     'lightning',
@@ -44,7 +45,7 @@ const dungeons = [
 function lightningEvent() {
     bot.chat('Event: Гнев зевса')
 
-    bot.chat('/execute as @a at @s run summon minecraft:lightning_bolt ~ ~ ~')
+    bot.chat(`/execute as ${playerSelector} at @s run summon minecraft:lightning_bolt ~ ~ ~`)
 
 }
 
@@ -58,49 +59,49 @@ function nightEvent() {
 function appleEvent() {
     bot.chat('Event: Бонуска')
 
-    bot.chat('/give @a minecraft:golden_apple 1')
+    bot.chat(`/give ${playerSelector} minecraft:golden_apple 1`)
 }
 
 function dogEvent() {
     bot.chat('Event: Друг человека')
     
-    bot.chat('/give @a minecraft:bone 5')
-    bot.chat('/execute as @a at @s run summon minecraft:wolf ~2 ~ ~')
+    bot.chat(`/give ${playerSelector} minecraft:bone 5`)
+    bot.chat(`/execute as ${playerSelector} at @s run summon minecraft:wolf ~2 ~ ~`)
 }
 
 function speedEvent() {
     bot.chat('Event: I can`t stop')
 
-    bot.chat('/effect give @a minecraft:speed 20 70')
+    bot.chat(`/effect give ${playerSelector} minecraft:speed 20 70`)
 
 }
 
 function totemEvent() {
     bot.chat('Event: Бессмертие')
 
-    bot.chat('/give @a minecraft:totem_of_undying 1')
+    bot.chat(`/give ${playerSelector} minecraft:totem_of_undying 1`)
 
 }
 
 function hungerEvent() {
     bot.chat('Event: Чревоугодие')
 
-    bot.chat('/effect give @a minecraft:hunger 10 255')
-    bot.chat('/give @a minecraft:rotten_flesh 15')
+    bot.chat(`/effect give ${playerSelector} minecraft:hunger 10 255`)
+    bot.chat(`/give ${playerSelector} minecraft:rotten_flesh 15`)
 }
 
 function zombieEvent() {
     bot.chat('Event: Зомби-апокалипсис')
 
-    bot.chat('/execute as @a at @s run summon minecraft:zombie ~2 ~ ~')
-    bot.chat('/execute as @a at @s run summon minecraft:zombie ~-2 ~ ~')  
-    bot.chat('/execute as @a at @s run summon minecraft:zombie ~ ~ ~2')
-}
+    bot.chat(`/execute as ${playerSelector} at @s run summon minecraft:zombie ~2 ~ ~`)
+    bot.chat(`/execute as ${playerSelector} at @s run summon minecraft:zombie ~-2 ~ ~`)
+    bot.chat(`/execute as ${playerSelector} at @s run summon minecraft:zombie ~ ~ ~2`)
+    }
 
 function tntEvent() {
     bot.chat('Event: TnT')
 
-    bot.chat('/execute as @a at @s run summon minecraft:tnt ~ ~ ~ {fuse:40}')
+    bot.chat(`/execute as ${playerSelector} at @s run summon minecraft:tnt ~ ~ ~ {fuse:40}`)
 }
 
 function dungeonEvent() {
@@ -108,54 +109,54 @@ function dungeonEvent() {
 
     const randomDungeon = dungeons[Math.floor(Math.random() * dungeons.length)]
 
-    bot.chat(`/execute as @a at @s positioned ~10 ~ ~ run place structure ${randomDungeon}`)
+    bot.chat(`/execute as ${playerSelector} at @s positioned ~10 ~ ~ run place structure ${randomDungeon}`)
 }
 
 function fireballEvent() {
     bot.chat('Event: Фаерболл')
 
-    bot.chat('/execute as @a at @s run summon fireball ~ ~1 ~ {ExplosionPower:10}')
+    bot.chat(`/execute as ${playerSelector} at @s run summon fireball ~ ~1 ~ {ExplosionPower:10}`)
 }
 
 function villageEvent() {
     bot.chat('Event: Деревня!')
 
-    bot.chat('/execute as @a at @s positioned ~15 ~ ~ run place structure minecraft:village_plains')
+    bot.chat(`/execute as ${playerSelector} at @s positioned ~15 ~ ~ run place structure minecraft:village_plains`)
 }
 
 function waterdropEvent() {
     bot.chat('Event: ВатерДроп')
 
-    bot.chat('/give @a minecraft:water_bucket 1')
-    bot.chat('/execute as @a at @s run tp @s ~ ~70 ~')
+    bot.chat(`/give ${playerSelector} minecraft:water_bucket 1`)
+    bot.chat(`/execute as ${playerSelector} at @s run tp @s ~ ~70 ~`)
 }
 
 function ghostEvent() {
     bot.chat('Event: Призрак')
 
-    bot.chat('/gamemode spectator @a')
+    bot.chat(`/gamemode spectator ${playerSelector}`)
 
     setTimeout(() => {
-        bot.chat('/gamemode survival @a')
+        bot.chat(`/gamemode survival ${playerSelector}`)
     }, 15000)
 }
 
 function coldEvent() {
     bot.chat('Event: Заморозка')
 
-    bot.chat('/effect give @a slowness 12 255 true')
+    bot.chat(`/effect give ${playerSelector} slowness 12 255 true`)
 }
 
 function levitationEvent() {
     bot.chat('Event: Невесомость')
 
-    bot.chat('/effect give @a levitation 15 1 true')
+    bot.chat(`/effect give ${playerSelector} levitation 15 1 true`)
 }
 
 function golemEvent() {
     bot.chat('Event: Подмога')
 
-    bot.chat('/give @a minecraft:iron_golem_spawn_egg')
+    bot.chat(`/give ${playerSelector} minecraft:iron_golem_spawn_egg 1`)
 }
 
 function timeEvent() {
@@ -168,7 +169,26 @@ function timeEvent() {
     }, 25000)
 }
 
-
+const eventFunctions = {
+    lightning: lightningEvent,
+    night: nightEvent,
+    apple: appleEvent,
+    dog: dogEvent,
+    speed: speedEvent,
+    totem: totemEvent,
+    hunger: hungerEvent,
+    zombie: zombieEvent,
+    tnt: tntEvent,
+    dungeon: dungeonEvent,
+    fireball: fireballEvent,
+    village: villageEvent,
+    waterdrop: waterdropEvent,
+    ghost: ghostEvent,
+    cold: coldEvent,
+    levitation: levitationEvent,
+    golem: golemEvent,
+    time: timeEvent
+}
 
 bot.on('spawn', () => {
     console.log('бот зашел на сервер')
@@ -212,12 +232,24 @@ bot.on('chat', (username, message) => {
         bot.chat('Zombie - Спавн 3 зомби')
         bot.chat('TNT - Активирующийся динамит')
         bot.chat('Fireball - Спавн фаерболла')
-        bot.chat('Water Drop - Тп игрока на 50 блоков вверх')
+        bot.chat('Water Drop - Тп игрока на 70 блоков вверх')
         bot.chat('Ghost - Режим наблюдателя на 15 сек')
         bot.chat('Cold - Стан игрока на 15 сек')
         bot.chat('Levitation - Левитация на 15 сек')
         bot.chat('===============================')
     }
+
+    if (message.startsWith('!event ')) {
+
+    const eventName = message.slice(7).trim().toLowerCase()
+
+    if (eventFunctions[eventName]) {
+        eventFunctions[eventName]()
+    } else {
+        bot.chat('Такого ивента не существует.')
+    }
+
+}
 
     if (message === '!start') {
 
@@ -230,7 +262,6 @@ bot.on('chat', (username, message) => {
 
         eventInterval = setInterval(() => {
 
-
             let randomEvent
 
             do {
@@ -241,77 +272,7 @@ bot.on('chat', (username, message) => {
            
             console.log(randomEvent)
 
-            if (randomEvent === 'lightning') {
-                lightningEvent()
-            }
-
-            if (randomEvent === 'night') {
-                nightEvent()
-            }
-
-            if (randomEvent === 'apple') {
-                appleEvent()
-            }
-
-            if (randomEvent === 'dog') {
-                dogEvent()
-            }
-
-            if (randomEvent === 'speed') {
-                speedEvent()
-            }
-
-            if (randomEvent === 'totem') {
-                totemEvent()
-            }
-
-            if (randomEvent === 'hunger') {
-                hungerEvent()
-            }
-
-            if (randomEvent === 'zombie') {
-                zombieEvent()
-            }
-
-            if (randomEvent === 'tnt') {
-                tntEvent()
-            }
-
-            if (randomEvent === 'dungeon') {
-                dungeonEvent()
-            }
-
-            if (randomEvent === 'fireball') {
-                fireballEvent()
-            }
-
-            if (randomEvent === 'village') {
-                villageEvent()
-            }
-
-            if (randomEvent === 'waterdrop') {
-                waterdropEvent()
-            }
-
-            if (randomEvent === 'ghost') {
-                ghostEvent()
-            }
-
-            if (randomEvent === 'cold') {
-                coldEvent()
-            }
-
-            if (randomEvent === 'levitation') {
-                levitationEvent()
-            }
-
-            if (randomEvent === 'golem') {
-                golemEvent()
-            }
-
-            if (randomEvent === 'time') {
-                timeEvent()
-            }
+            eventFunctions[randomEvent]()
 
         }, 60000) 
     }
