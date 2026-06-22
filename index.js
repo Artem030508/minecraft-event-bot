@@ -10,6 +10,8 @@ const bot = mineflayer.createBot({
 
 let eventInterval = null
 let lastEvent = null
+let eventTime = 60
+
 const playerSelector = '@a[name=!BotEvent]'
 
 const events = [
@@ -31,6 +33,9 @@ const events = [
     'levitation',
     'golem',
     'time',
+    'rider',
+    'kitstart',
+    'label'
 ]
 
 const dungeons = [
@@ -169,6 +174,29 @@ function timeEvent() {
     }, 25000)
 }
 
+function riderEvent() {
+    bot.chat('Event: Всадники Апокалипсиса')
+
+    bot.chat(`/execute as ${playerSelector} at @s run summon minecraft:skeleton_horse ~6 ~ ~ {SkeletonTrap:1b}`)
+}
+
+function kitstartEvent() {
+    bot.chat('Event: Кит старт')
+
+    bot.chat(`/give ${playerSelector} minecraft:stone_sword[minecraft:enchantments={levels:{"minecraft:sharpness":2,"minecraft:knockback":1}}]`)
+
+    bot.chat(`/give ${playerSelector} minecraft:leather_helmet`)
+    bot.chat(`/give ${playerSelector} minecraft:leather_boots`)
+    bot.chat(`/give ${playerSelector} minecraft:chainmail_chestplate`)
+    bot.chat(`/give ${playerSelector} minecraft:chainmail_leggings`)
+}
+
+function labelEvent() {
+    bot.chat('Event: Черная метка')
+
+    bot.chat(`/effect give ${playerSelector} minecraft:bad_omen 99999 4 false`)
+}
+
 const eventFunctions = {
     lightning: lightningEvent,
     night: nightEvent,
@@ -187,7 +215,30 @@ const eventFunctions = {
     cold: coldEvent,
     levitation: levitationEvent,
     golem: golemEvent,
-    time: timeEvent
+    time: timeEvent,
+    rider: riderEvent,
+    kitstart: kitstartEvent,
+    label: labelEvent
+}
+
+function startEventTimer() {
+
+    eventInterval = setInterval(() => {
+
+        let randomEvent
+
+        do {
+            randomEvent = events[Math.floor(Math.random() * events.length)]
+        } while (randomEvent === lastEvent)
+
+        lastEvent = randomEvent
+
+        console.log('Запуск ивента:', randomEvent)
+
+        eventFunctions[randomEvent]()
+
+    }, eventTime * 1000)
+
 }
 
 bot.on('spawn', () => {
@@ -204,6 +255,7 @@ bot.on('chat', (username, message) => {
         bot.chat("========== EVENT BOT ==========");
         bot.chat("!help - показать помощь");
         bot.chat("!menu - показать меню ивентов");
+        bot.chat("!time <время между ивентами> - изменить время между ивентами");
         bot.chat("!event <название ивента> - запуск конкретного ивента");
         bot.chat("!easy - лёгкий режим (70% хороших, 30% плохих)");
         bot.chat("!normal - обычный режим (50% хороших, 50% плохих)");
@@ -224,6 +276,7 @@ bot.on('chat', (username, message) => {
         bot.chat('Dungeon - Спавн случайного данжа')
         bot.chat('Golem - Яйцо призыва голема')
         bot.chat('Time - Остановка времени на 25 сек')
+        bot.chat('Ghost - Режим наблюдателя на 15 сек')
 
         bot.chat('--- Плохие ивенты ---')
         bot.chat('Lightning - Спавн молнии')
@@ -233,7 +286,6 @@ bot.on('chat', (username, message) => {
         bot.chat('TNT - Активирующийся динамит')
         bot.chat('Fireball - Спавн фаерболла')
         bot.chat('Water Drop - Тп игрока на 70 блоков вверх')
-        bot.chat('Ghost - Режим наблюдателя на 15 сек')
         bot.chat('Cold - Стан игрока на 15 сек')
         bot.chat('Levitation - Левитация на 15 сек')
         bot.chat('===============================')
@@ -251,6 +303,30 @@ bot.on('chat', (username, message) => {
 
 }
 
+if (message.startsWith('!time ')) {
+
+    const newTime = Number(message.slice(6).trim())
+
+    if (isNaN(newTime) || newTime < 5) {
+        bot.chat('Введите число больше либо равное 5.')
+        return
+    }
+
+    eventTime = newTime
+
+    bot.chat(`Новое время между ивентами: ${eventTime} сек.`)
+
+    if (eventInterval) {
+
+        clearInterval(eventInterval)
+
+        startEventTimer()
+
+        bot.chat('Таймер обновлен.')
+    }
+}
+
+
     if (message === '!start') {
 
         if (eventInterval) {
@@ -260,21 +336,7 @@ bot.on('chat', (username, message) => {
 
         bot.chat('Система ивентов запущена')
 
-        eventInterval = setInterval(() => {
-
-            let randomEvent
-
-            do {
-                randomEvent = events[Math.floor(Math.random() * events.length)]
-            } while (randomEvent === lastEvent)
-
-            lastEvent = randomEvent
-           
-            console.log(randomEvent)
-
-            eventFunctions[randomEvent]()
-
-        }, 60000) 
+        startEventTimer()
     }
 
     if (message === '!stop') {
