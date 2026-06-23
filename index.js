@@ -11,31 +11,36 @@ const bot = mineflayer.createBot({
 let eventInterval = null
 let lastEvent = null
 let eventTime = 60
+let mode = 'normal'
 
 const playerSelector = '@a[name=!BotEvent]'
 
-const events = [
-    'lightning',
-    'night',
+const goodEvents = [
     'apple',
     'dog',
     'speed',
     'totem',
+    'dungeon',
+    'village',
+    'ghost',
+    'golem',
+    'time',
+    'kitstart',
+]
+
+const badEvents = [
+    'lightning',
+    'night',
     'hunger',
     'zombie',
     'tnt',
-    'dungeon',
     'fireball',
-    'village',
     'waterdrop',
-    'ghost',
     'cold',
     'levitation',
-    'golem',
-    'time',
     'rider',
-    'kitstart',
     'label'
+    
 ]
 
 const dungeons = [
@@ -221,17 +226,36 @@ const eventFunctions = {
     label: labelEvent
 }
 
+
+function getRandomEvent() {
+
+    let pool
+
+    if (mode === 'easy') {
+        pool = Math.random() < 0.7 ? goodEvents : badEvents
+
+    } else {
+        pool = Math.random() < 0.5 ? goodEvents : badEvents
+    } 
+
+    let event
+
+    do {
+        event = pool[Math.floor(Math.random() * pool.length)]
+    } while (event === lastEvent)
+
+    lastEvent = event
+
+    return event
+}
+
+
+
 function startEventTimer() {
 
     eventInterval = setInterval(() => {
 
-        let randomEvent
-
-        do {
-            randomEvent = events[Math.floor(Math.random() * events.length)]
-        } while (randomEvent === lastEvent)
-
-        lastEvent = randomEvent
+        const randomEvent = getRandomEvent()
 
         console.log('Запуск ивента:', randomEvent)
 
@@ -267,7 +291,7 @@ bot.on('chat', (username, message) => {
 
     if (message === "!menu") {
         bot.chat('========== EVENT MENU ==========')
-       bot.chat('--- Хорошие ивенты ---')
+        bot.chat('--- Хорошие ивенты ---')
         bot.chat('Apple - Золотое яблоко')
         bot.chat('Dog - Спавн собаки и кости')
         bot.chat('Speed - Очень высокая скорость')
@@ -289,6 +313,18 @@ bot.on('chat', (username, message) => {
         bot.chat('Cold - Стан игрока на 15 сек')
         bot.chat('Levitation - Левитация на 15 сек')
         bot.chat('===============================')
+    }
+
+    if (message === '!easy') {
+        
+        mode = 'easy'
+        bot.chat('Режим изменён на лёгкий.')
+    }
+
+    if (message === '!normal') {
+
+        mode = 'normal'
+        bot.chat('Режим изменён на обычный.')
     }
 
     if (message.startsWith('!event ')) {
