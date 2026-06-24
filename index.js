@@ -26,6 +26,8 @@ const goodEvents = [
     'golem',
     'time',
     'kitstart',
+    'player',
+    'creeper',
 ]
 
 const badEvents = [
@@ -39,8 +41,10 @@ const badEvents = [
     'cold',
     'levitation',
     'rider',
-    'label'
-    
+    'label',
+    'ghast',
+    'tsunami',
+    'scare'
 ]
 
 const dungeons = [
@@ -202,6 +206,43 @@ function labelEvent() {
     bot.chat(`/effect give ${playerSelector} minecraft:bad_omen 99999 4 false`)
 }
 
+function playerEvent() {
+    bot.chat('Event: Проигрователь')
+
+    bot.chat(`/execute as ${playerSelector} at @s run setblock ~4 ~ ~ minecraft:jukebox`)
+
+    bot.chat(`/execute as ${playerSelector} at @s run item replace block ~4 ~ ~ container.0 with minecraft:music_disc_mellohi`)
+   
+}
+
+function ghastEvent() {
+    bot.chat('Event: Гаст')
+
+    bot.chat(`/execute as ${playerSelector} at @s run summon minecraft:ghast ~ ~6 ~`)
+}
+
+function creeperEvent() {
+    bot.chat('Event: Creeper Aw Man!!!')
+
+    bot.chat(`/execute as ${playerSelector} at @s run summon creeper ~2 ~ ~ {Fuse:30,ExplosionRadius:0}`)
+}
+
+function tsunamiEvent() {
+    bot.chat('Event: Цунами')
+
+    bot.chat(`/execute as ${playerSelector} at @s run fill ~-15 ~ ~-15 ~15 ~15 ~15 water`)
+}
+
+function scareEvent() {
+    bot.chat('Event: Скример')
+
+    bot.chat(`/effect give ${playerSelector} minecraft:blindness 15 0 true`)
+
+    bot.chat(`/execute as ${playerSelector} at @s run summon minecraft:wither_skeleton ~2 ~ ~`)
+
+    bot.chat(`/execute as ${playerSelector} at @s run playsound minecraft:entity.ghast.scream hostile @s ~ ~ ~ 10 1`)
+}
+
 const eventFunctions = {
     lightning: lightningEvent,
     night: nightEvent,
@@ -223,7 +264,12 @@ const eventFunctions = {
     time: timeEvent,
     rider: riderEvent,
     kitstart: kitstartEvent,
-    label: labelEvent
+    label: labelEvent,
+    player: playerEvent,
+    ghast: ghastEvent,
+    creeper: creeperEvent,
+    tsunami: tsunamiEvent,
+    scare: scareEvent
 }
 
 
@@ -232,11 +278,30 @@ function getRandomEvent() {
     let pool
 
     if (mode === 'easy') {
-        pool = Math.random() < 0.7 ? goodEvents : badEvents
+        
+        if (Math.random() < 0.7) {
+            pool = goodEvents
+        } else {
+            pool = badEvents
+        }
+
+    } else if (mode === 'normal'){
+        
+        if (Math.random() < 0.5) {
+            pool = goodEvents
+        } else {
+            pool = badEvents
+        }
 
     } else {
-        pool = Math.random() < 0.5 ? goodEvents : badEvents
-    } 
+        
+        if (Math.random() < 0.3) {
+            pool = goodEvents
+        } else {
+            pool = badEvents
+        }
+
+    }
 
     let event
 
@@ -326,6 +391,14 @@ bot.on('chat', (username, message) => {
         mode = 'normal'
         bot.chat('Режим изменён на обычный.')
     }
+
+    if (message === '!hard') {
+
+        mode = 'hard'
+        bot.chat('Режим изменён на сложный.')
+    }
+
+    
 
     if (message.startsWith('!event ')) {
 
